@@ -11,7 +11,8 @@ export default function Board() {
   const [squares, setSquares] = useState(Array(9).fill(null));
 
   function handleClick(squareIndex) {
-    if (squares[squareIndex] != null) return
+    const isSelected = squares[squareIndex] != null;
+    if (checkForWinner(squares) || isSelected) return
     const nextSquares = squares.slice();
     const next = isOddTurn ? X : O;
     nextSquares[squareIndex] = next;
@@ -38,4 +39,26 @@ export default function Board() {
       </div>
     </div>
   )
+}
+
+function checkForWinner(squares) {
+  const winnerIndexes = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+
+  for (let i = 0; i < winnerIndexes.length; i++) {
+    const [a, b, c] = winnerIndexes[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  
+  return null;
 }
