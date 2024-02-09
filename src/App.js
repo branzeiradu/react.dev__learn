@@ -7,13 +7,16 @@ export function Square({ letter, clickHandler }) {
 }
 
 export default function Board() {
-
+  const [isOddTurn, setNextTurn] = useState(true);
   const [squares, setSquares] = useState(Array(9).fill(null));
 
   function handleClick(squareIndex) {
+    if (squares[squareIndex] != null) return
     const nextSquares = squares.slice();
-    nextSquares[squareIndex] = X;
+    const next = isOddTurn ? X : O;
+    nextSquares[squareIndex] = next;
     setSquares(nextSquares);
+    setNextTurn(!isOddTurn);
   }
 
   return (
