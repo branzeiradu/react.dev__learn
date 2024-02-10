@@ -8,13 +8,18 @@ export function Square({ letter, clickHandler }) {
 
 export default function Board() {
   const [isOddTurn, setNextTurn] = useState(true);
+  const getNextPlayer = () => isOddTurn ? X : O
   const [squares, setSquares] = useState(Array(9).fill(null));
+  const winner = checkForWinner(squares);
+  let status = (winner != null) 
+              ? `Winner: ${winner}` 
+              : `Next player: ${getNextPlayer()}`
 
   function handleClick(squareIndex) {
     const isSelected = squares[squareIndex] != null;
     if (checkForWinner(squares) || isSelected) return
     const nextSquares = squares.slice();
-    const next = isOddTurn ? X : O;
+    const next = getNextPlayer();
     nextSquares[squareIndex] = next;
     setSquares(nextSquares);
     setNextTurn(!isOddTurn);
@@ -22,6 +27,7 @@ export default function Board() {
 
   return (
     <div>
+      <div className="status">{status}</div>
       <div className="board-row">
         <Square letter={squares[0]} clickHandler={() => handleClick(0)} />
         <Square letter={squares[1]} clickHandler={() => handleClick(1)} />
