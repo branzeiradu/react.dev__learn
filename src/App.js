@@ -79,7 +79,6 @@ function MovesHistory({ history, jumpTo }) {
 }
 
 export default function Game() {
-  const [isOddTurn, setNextTurn] = useState(true);
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   let currentSquares = history[currentMoveIndex];
@@ -88,19 +87,17 @@ export default function Game() {
     if (currentMoveIndex < history.length-1) return;
     const nextSquares = [...history, updatedSquares];
     setHistory(nextSquares);
-    setNextTurn(!isOddTurn);
     setCurrentMoveIndex(nextSquares.length-1)
   }
 
   function onJumpTo(moveIndex) {
     setCurrentMoveIndex(moveIndex)
-    setNextTurn(moveIndex % 2 === 0);
   }
 
   return (
     <div className="game">
       <div className="game-board">
-        <Board currentSquares={currentSquares} currentTurn={isOddTurn} onPlay={onPlayHandler} />
+        <Board currentSquares={currentSquares} currentTurn={currentMoveIndex % 2 === 0} onPlay={onPlayHandler} />
       </div>
       <div className="game-info">
         <MovesHistory jumpTo={onJumpTo} history={history}/>
