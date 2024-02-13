@@ -44,14 +44,57 @@ function Board({ currentSquares, currentTurn, onPlay }) {
     </div>
   )
 }
+
+function MoveButton({ moveIndex, onClick, isActive }) {
+  const handler = () => {
+    onClick(moveIndex);
+  }
+
+  const label = (moveIndex > 0) ? `move #${moveIndex}` : `game start`;
+  const description = `Go to ${label}`;
+
+  const clsName = `game-btn ${isActive ? "game-btn--active" : ""}`;
+  return (
+    <button className={clsName} onClick={handler}>{description}</button>
+  )
+}
+
+function MovesHistory({ history, jumpTo }) {
+  const [activeIndex, setActive] = useState(-1)
+  const handler = (moveIndex) => {
+    jumpTo(moveIndex);
+    setActive(moveIndex);
+  }
+  const historyItems = history.map((squares, moveIndex) => {
+    return (
+      <li key={moveIndex}>
+        <MoveButton moveIndex={moveIndex} onClick={handler} isActive={moveIndex === activeIndex}/>
+      </li>
+    )
+  })
+
+  return (
+    <ol>{historyItems}</ol>
+  );
+}
+
 export default function Game() {
   const [isOddTurn, setNextTurn] = useState(true);
   const [history, setHistory] = useState([Array(9).fill(null)]);
-  const currentSquares = history[history.length - 1];
+  const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
+  let currentSquares = history[currentMoveIndex];
 
   const onPlayHandler = (updatedSquares) => {
-    setHistory([...history, updatedSquares]);
+    if (currentMoveIndex < history.length-1) return;
+    const nextSquares = [...history, updatedSquares];
+    setHistory(nextSquares);
     setNextTurn(!isOddTurn);
+    setCurrentMoveIndex(nextSquares.length-1)
+  }
+
+  function onJumpTo(moveIndex) {
+    setCurrentMoveIndex(moveIndex)
+    setNextTurn(moveIndex % 2 === 0);
   }
 
   return (
@@ -60,7 +103,7 @@ export default function Game() {
         <Board currentSquares={currentSquares} currentTurn={isOddTurn} onPlay={onPlayHandler} />
       </div>
       <div className="game-info">
-        <ol>{/*TODO*/}</ol>
+        <MovesHistory jumpTo={onJumpTo} history={history}/>
       </div>
     </div>
   );
