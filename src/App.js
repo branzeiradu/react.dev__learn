@@ -6,26 +6,28 @@ function Square({ letter, clickHandler }) {
   return <button className="square" onClick={clickHandler}>{letter}</button>;
 }
 
-function Board({ currentSquares, currentTurn, onPlay }) {
-  const getNextPlayer = () => currentTurn ? X : O
+function Board({ size, currentSquares, currentTurnIndex, onPlay }) {
+  const nextPlayer = currentTurnIndex % 2 === 0 ? X : O
   const winner = checkForWinner(currentSquares);
-  let status = (winner != null)
-    ? `Winner: ${winner}`
-    : `Next player: ${getNextPlayer()}`
-
+  let statusMessage
+  if (currentTurnIndex < size) {
+    statusMessage = (winner != null) ? `Winner: ${winner}` : `Next player: ${nextPlayer}`
+  } else {
+    statusMessage = "Tie!"
+  }
+    
   function handleClick(squareIndex) {
     const isSelected = currentSquares[squareIndex] != null;
     const winner = checkForWinner(currentSquares);
     if (winner != null || isSelected) return
     const nextSquares = currentSquares.slice();
-    const next = getNextPlayer();
-    nextSquares[squareIndex] = next;
+    nextSquares[squareIndex] = nextPlayer;
     onPlay(nextSquares);
   }
 
   return (
     <div>
-      <div className="status">{status}</div>
+      <div className="status">{statusMessage}</div>
       <div className="board-row">
         <Square letter={currentSquares[0]} clickHandler={() => handleClick(0)} />
         <Square letter={currentSquares[1]} clickHandler={() => handleClick(1)} />
@@ -79,7 +81,8 @@ function MovesHistory({ history, jumpTo }) {
 }
 
 export default function Game() {
-  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const boardSize = 9
+  const [history, setHistory] = useState([Array(boardSize).fill(null)]);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   let currentSquares = history[currentMoveIndex];
 
@@ -97,7 +100,7 @@ export default function Game() {
   return (
     <div className="game">
       <div className="game-board">
-        <Board currentSquares={currentSquares} currentTurn={currentMoveIndex % 2 === 0} onPlay={onPlayHandler} />
+        <Board size={boardSize} currentSquares={currentSquares} currentTurnIndex={currentMoveIndex} onPlay={onPlayHandler} />
       </div>
       <div className="game-info">
         <MovesHistory jumpTo={onJumpTo} history={history}/>
