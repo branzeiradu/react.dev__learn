@@ -85,6 +85,14 @@ body {
   flex-direction: row;
 }
 
+.game-btn {
+  margin: 2px 
+}
+
+.game-btn--active {
+  border-color: black;
+}
+
 .game-info {
   margin-left: 20px;
 }
